@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="arkanoid.html"></script>
+    <title></title>
+</head>
+<style>
+    body{
+        background-color: #111;
+        
+    }
+    canvas{
+        border: 4px solid #fff;
+        border-bottom: transparent;
+        background: url('/ARKANOID/bkg.png');
+        margin: auto;
+        display: block;
+    }
+</style>
+<body>
+    <canvas>
+
+    </canvas>
+
+    <img  hidden id="bloques" src="/ARKANOID/bricks.png" alt="bloques"/>
+    <img hidden id="sprites" src="/ARKANOID/sprite.png" alt="sprite"/>
+</body>
+
+<script>
+    const canvas = document.querySelector('canvas')
+    const ctx = canvas.getContext('2d') //es la manera en la que se representara el canvas, es decir en 2d
+
+    const $sprites = document.querySelector('#sprites')
+    const $bloques = document.querySelector("#bloques")
+    canvas.width = 448 //tamaño del canvas
+    canvas.height = 400
+
+
+    //variables de nuestro juego
+
+    //variable de la pelota
+    const ballRadius = 4; //radio
+
+    //posicion de la pelota
+    let x = canvas.width / 2 
+    let y = canvas.height -30
+
+
+    //velocidad de la pelota
+    let dx = 2
+    let dy = -2
+
+    //variables de la paleta
+    const paddleHeight = 10;
+    const paddleWidth = 50;
+
+    //posicion inicial de la paleta
+    let paddleX = (canvas.width - paddleWidth) / 2
+    let paddleY = canvas.height - paddleHeight - 10
+
+    let rightPressed = false
+    let leftPressed = false
+
+
+    //variables de los ladrillos
+
+    const brickRowCount = 6
+    const brickColumnCount = 13;
+    const brickWidth = 30;
+    const brickHeight = 14;
+    const brickPadding = 2;
+    const brickOffsetTop = 80;
+    const brickOffsetleft = 30;
+    const bricks = [];
+
+    for (let c = 0; c < brickColumnCount; c++){
+        bricks[c] = []
+        for(let r = 0;r < brickRowCount; r++ ){
+            
+        }
+    }
+
+    
+    function drawPaddle(){
+        ctx.fillStyle = "#09f"
+        ctx.drawImage(
+            $sprites, //imagen
+            29, //clipY: coordenadas del recorte
+            174, //clipX: coordenadas de recorte
+            paddleWidth, //el tamñao del recorte
+            paddleHeight, //tamaño del recorte
+            paddleX, //posicion X del dibujo
+            paddleY, //posicion Y del dibujo
+            paddleWidth, //ancho del dibujo
+            paddleHeight //alto del dibujo
+        ) 
+    }
+
+    function drawBall(){
+        //emepzar a dibujar
+        ctx.beginPath()
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2)//esto es para dibujar la pelota
+        ctx.fillStyle='#fff'
+        ctx.fill()
+        ctx.closePath()
+    }
+    function paddleMovement(){
+        if(rightPressed && paddleX < canvas.width - paddleWidth){
+            paddleX += 7
+        }else if (leftPressed && paddleX > 0 ){
+            paddleX -= 7
+        }
+    }
+
+    function ballMovement(){
+        //rebotar pelota en los laterales
+
+        const isBallSameXAsPaddle = x > paddleX && x < paddleX + paddleWidth
+
+        const isBallTouchingPaddle = y + dy > paddleY
+        if ( isBallSameXAsPaddle && isBallTouchingPaddle){ //si pega con la pala 
+            dy = -dy //cambiamos dirección de la pelota
+        }
+        else if( //si pega con la pared
+            x + dx > canvas.width  ||//pared derecha
+            x + dx < 0  //pared izquierda
+        ){
+            dx = -dx
+        }
+        //rebotar en la pared de arriba
+        if  ( y +dy < 0){
+            dy = -dy
+        }
+
+        if( y + dy > canvas.height - ballRadius){
+            console.log("Moriste")
+            document.location.reload()
+        }
+        //avance de la pelota
+        x += dx
+        y += dy
+    }
+
+    function cleanCanvas(){
+        //antes de dibujar todo se limpia la pantalla para que no salga una linea 
+        ctx.clearRect(0,0, canvas.width, canvas.height)
+    }
+    
+    function initEvents () {
+        {/* solo esuchamos pero sin actualizar nada*/}
+        document.addEventListener('keydown', keyDownHandler)
+        document.addEventListener('keyup', keyUpHandler)
+
+        function keyDownHandler (event) {
+            const { key } = event
+            if (key === 'Right' || key === 'ArrowRight'){
+                rightPressed = true
+            } else if ( key === 'Left' || key === 'ArrowLeft'){
+                leftPressed = true
+            }
+        }
+
+        function keyUpHandler (event) {
+            const { key } = event
+            if (key === 'Right' || key === 'ArrowRight'){
+                rightPressed = false
+            } else if ( key === 'Left' || key === 'ArrowLeft'){
+                leftPressed = false
+            }
+        }
+    }
+
+    function draw (){
+        //aquí va la logica de los juegos
+        console.log("hola")
+        console.log({rightPressed, leftPressed})
+
+        //limpia todo y volver a dibujar
+        cleanCanvas()
+
+
+        //dibujar los elementos
+        drawBall()
+
+        //colisiones y movimiento
+        
+        ballMovement()
+        
+        //paleta
+        drawPaddle()
+
+        paddleMovement()
+        //es un método que te permite realizar una funcíon se ejecute antes de cada vez que se repinte la pantalla
+        //estar contantemente pintando la pantalla
+        window.requestAnimationFrame(draw) //recursividad, por el hecho de que se llama así mismo.
+
+    }
+
+    draw()//esto es un loop infinito, esto es la base de cualquier videojuego
+    initEvents()
+</script>
+</html>
