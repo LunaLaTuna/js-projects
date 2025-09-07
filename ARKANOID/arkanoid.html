@@ -68,17 +68,34 @@
 
     const brickRowCount = 6
     const brickColumnCount = 13;
-    const brickWidth = 30;
-    const brickHeight = 14;
-    const brickPadding = 2;
+    const brickWidth = 32;
+    const brickHeight = 16;
+    const brickPadding = 0;
     const brickOffsetTop = 80;
-    const brickOffsetleft = 30;
+    const brickOffsetleft = 16;
     const bricks = [];
+
+
+    const brick_status = {
+        active: 1,
+        broken: 0
+}
 
     for (let c = 0; c < brickColumnCount; c++){
         bricks[c] = []
         for(let r = 0;r < brickRowCount; r++ ){
+            //calculmos la posicion del los ladrillos
+            const brickX = c * (brickWidth + brickPadding) + brickOffsetleft
+
+            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop
+
+
+            //asignar un color aleatorio
+            const random = Math.floor(Math.random() * 8)//el numeor saldra del 0 al 7, redondandolo , de esta forma los colores saldran de una forma aleatoria
             
+            //guardamos la infomacion
+
+            bricks[c][r] = {x: brickX, y: brickY, status: brick_status.active, color: random}
         }
     }
 
@@ -172,6 +189,56 @@
         }
     }
 
+
+    function drawBricks () {
+        for(let c=0; c < brickColumnCount; c++){
+            for(let r=0; r < brickRowCount; r++){
+                const currentBrick = bricks[c][r]
+                if (currentBrick.status === brick_status.broken)
+                continue;
+                ctx.fillStyle = 'red'
+                ctx.rect(
+                    currentBrick.x,
+                    currentBrick.y,
+                    brickWidth,
+                    brickHeight,
+
+                )
+                const clipX = currentBrick.color * 32
+                ctx.drawImage(
+                    $bloques,
+                    clipX,
+                    0,
+                    32,
+                    16,
+                    currentBrick.x,
+                    currentBrick.y,
+                    brickWidth,
+                    brickHeight
+                );
+
+                }
+            }
+    }
+
+    function collisionDetection(){
+        for(let c=0 ; c < brickColumnCount; c++){
+            for(let r=0; r < brickRowCount; r++){
+                const currentBrick = bricks[c][r];
+
+                if (currentBrick.status === brick_status.broken) continue;
+                const isBallSameXasBrick = x > currentBrick.x && x < currentBrick.x + brickWidth
+
+
+                const isBallSameYasBrick = y > currentBrick.y && y < currentBrick.y + brickHeight
+
+                if (isBallSameXasBrick && isBallSameYasBrick) {
+                    dy = -dy
+                    currentBrick.status = brick_status.broken
+                }
+            }
+        }
+    }
     function draw (){
         //aquí va la logica de los juegos
         console.log("hola")
@@ -192,6 +259,10 @@
         drawPaddle()
 
         paddleMovement()
+
+
+        drawBricks()
+        collisionDetection()
         //es un método que te permite realizar una funcíon se ejecute antes de cada vez que se repinte la pantalla
         //estar contantemente pintando la pantalla
         window.requestAnimationFrame(draw) //recursividad, por el hecho de que se llama así mismo.
