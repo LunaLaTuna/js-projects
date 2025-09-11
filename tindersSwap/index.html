@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <main>
+    <section>
+      <header>
+        <img src="/tinder-logo.webp" alt="logo" />
+      </header>
+
+      <div>
+        <article>
+            <img src="./1.webp" alt="Scarlett, pelo rojo, 23 años">
+            <h2>Alex, <span></span></h2>
+        </article>
+      </div>
+      <footer>
+        <button></button>
+        <button></button>
+        <button></button>
+        <button></button>
+        <button></button>
+      </footer>
+    </section>
+  </main>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: grid;
+      place-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      background: #eeee;
+    }
+
+    main {
+      background: url("./iphone.webp") no-repeat;
+      background-size: contain;
+      width: 320px;
+      height: 640px;
+      display: flex;
+      filter: drop-shadow(0 0 10px #2c2a2a6e);
+    }
+
+    section {
+      background: #f6f6f6;
+      width: 100%;
+      border-radius: 32px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      padding: 16px 6px;
+      margin: 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+    
+      & img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    footer{
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        padding: 0 24px;
+        justify-content: center;
+        
+
+        & button{
+            height: 32px;
+            width:32px;
+            border-radius: 50%;
+            border: 1px solid #ccc
+        }
+    }
+  </style>
+</html>
